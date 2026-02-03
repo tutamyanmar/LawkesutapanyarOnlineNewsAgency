@@ -1,16 +1,7 @@
-// Firebase Configuration
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "lawkesutapanyar.firebaseapp.com",
-    projectId: "lawkesutapanyar",
-    storageBucket: "lawkesutapanyar.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
-};
+// js/main.js
 
-// Initialize Firebase
-const app = firebase.initializeApp(ffirebaseConfig);
-const db = firebase.firestore();
+// ဒီ file မှာ Firebase initialization ကို မထည့်တော့ဘူး
+// ဘာလို့လဲဆိုတော့ index.html မှာ ရှေ့ကတည်းက initialize လုပ်ပြီးသားမို့
 
 // Function to load news
 async function loadNews() {
@@ -20,7 +11,8 @@ async function loadNews() {
         
         newsContainer.innerHTML = '<p>သတင်းများ ရယူနေသည်...</p>';
         
-        const querySnapshot = await db.collection("news")
+        // window.firebaseDb ကို အသုံးပြုပါ
+        const querySnapshot = await window.firebaseDb.collection("news")
             .orderBy("createdAt", "desc")
             .limit(10)
             .get();
@@ -62,7 +54,7 @@ async function loadNews() {
 
 // Function to view news detail
 function viewNewsDetail(newsId) {
-    alert('သတင်း ID: ' + newsId + '\\nနောက်ပိုင်းတွင် ပြင်ဆင်ပါမည်။');
+    alert('သတင်း ID: ' + newsId + '\nနောက်ပိုင်းတွင် ပြင်ဆင်ပါမည်။');
 }
 
 // Load news when page is ready
