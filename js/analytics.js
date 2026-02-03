@@ -1,16 +1,21 @@
+// js/analytics.js
+
 // Analytics tracking
-function trackPageView() {
-    // Track page view
-    const pageData = {
-        page: window.location.pathname,
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent
-    };
-    
-    // Save to Firestore
-    if (typeof db !== 'undefined') {
-        db.collection("page_views").add(pageData)
-            .catch(error => console.error("Tracking error:", error));
+async function trackPageView() {
+    try {
+        // Track page view
+        const pageData = {
+            page: window.location.pathname,
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent
+        };
+        
+        // Save to Firestore
+        if (typeof window.firebaseDb !== 'undefined') {
+            await window.firebaseDb.collection("page_views").add(pageData);
+        }
+    } catch (error) {
+        console.error("Tracking error:", error);
     }
 }
 
@@ -27,8 +32,8 @@ async function trackVisitorCountry() {
             timestamp: new Date().toISOString()
         };
         
-        if (typeof db !== 'undefined') {
-            db.collection("visitors").add(visitorData);
+        if (typeof window.firebaseDb !== 'undefined') {
+            await window.firebaseDb.collection("visitors").add(visitorData);
         }
         
     } catch (error) {
