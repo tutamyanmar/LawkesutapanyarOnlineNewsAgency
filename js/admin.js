@@ -1,11 +1,27 @@
-// Admin JavaScript File
-console.log("Admin JS loaded");
+// js/admin.js
 
 // Admin login function
-async function adminLogin(email, password) {
+async function adminLogin() {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    
+    if (!email || !password) {
+        alert("ကျေးဇူးပြု၍ email နှင့် password ထည့်ပါ။");
+        return;
+    }
+    
     try {
-        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+        // window.firebaseAuth ကို အသုံးပြုပါ
+        const userCredential = await window.firebaseAuth.signInWithEmailAndPassword(email, password);
         alert("Login successful!");
+        
+        // Show admin panel
+        document.getElementById('admin-panel').style.display = 'block';
+        document.getElementById('news-list-section').style.display = 'block';
+        
+        // Load all news
+        loadAllNews();
+        
         return userCredential.user;
     } catch (error) {
         alert("Login error: " + error.message);
@@ -15,7 +31,8 @@ async function adminLogin(email, password) {
 
 // Add new news
 async function addNews() {
-    const user = firebase.auth().currentUser;
+    // window.firebaseAuth ကို အသုံးပြုပါ
+    const user = window.firebaseAuth.currentUser;
     if (!user) {
         alert("Please login first!");
         return;
@@ -32,7 +49,8 @@ async function addNews() {
     }
     
     try {
-        await db.collection("news").add({
+        // window.firebaseDb ကို အသုံးပြုပါ
+        await window.firebaseDb.collection("news").add({
             title: title,
             content: content,
             imageUrl: imageUrl || "",
@@ -50,6 +68,9 @@ async function addNews() {
         document.getElementById('news-image').value = '';
         document.getElementById('news-category').value = '';
         
+        // Reload news list
+        loadAllNews();
+        
     } catch (error) {
         alert("Error adding news: " + error.message);
     }
@@ -58,7 +79,8 @@ async function addNews() {
 // Load all news for admin
 async function loadAllNews() {
     try {
-        const querySnapshot = await db.collection("news")
+        // window.firebaseDb ကို အသုံးပြုပါ
+        const querySnapshot = await window.firebaseDb.collection("news")
             .orderBy("createdAt", "desc")
             .get();
         
@@ -85,18 +107,33 @@ async function loadAllNews() {
     }
 }
 
-// Initialize admin page
-if (window.location.pathname.includes('admin.html')) {
-    document.addEventListener('DOMContentLoaded', function() {
-        // Check if user is logged in
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                console.log("User logged in:", user.email);
-                loadAllNews();
-            } else {
-                console.log("No user logged in");
-                // Show login form
-            }
-        });
-    });
+// Edit news function (အခြေခံ)
+function editNews(newsId) {
+    alert("Edit news: " + newsId + "\nနောက်ပိုင်းတွင် ပြင်ဆင်ပါမည်။");
 }
+
+// Delete news function (အခြေခံ)
+async function deleteNews(newsId) {
+    if (confirm("ဒီသတင်းကို ဖျက်မှာ သေချာပါသလား?")) {
+        try {
+            await window.firebaseDb.collection("news").doc(newsId).delete();
+            alert("သတင်း ဖျက်ပြီးပါပြီ။");
+            loadAllNews();
+        } catch (error) {
+            alert("ဖျက်ရာတွင် အမှားဖြစ်နေပါသည်: " + error.message);
+        }
+    }
+}
+
+// Initialize admin page
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if user is already logged in
+    window.firebaseAuth.onAuthStateChanged(function(user) {
+        if (user) {
+            console.log("User already logged in:", user.email);
+            document.getElementById('admin-panel').style.display = 'block';
+            document.getElementById('news-list-section').style.display = 'block';
+            loadAllNews();
+        }
+    });
+});
