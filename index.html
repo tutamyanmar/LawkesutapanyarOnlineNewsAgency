@@ -8,95 +8,44 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <!-- Your JS files -->
+    <script src="js/main.js" defer></script>
+    <script src="js/analytics.js" defer></script>
     
     <style>
-        /* ရိုးရှင်းသော CSS */
-        body { font-family: 'Pyidaungsu', sans-serif; margin: 0; padding: 20px; }
-        .news-item { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        /* CSS styles */
+        body { font-family: 'Pyidaungsu', sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        header { background: #1a73e8; color: white; padding: 20px; text-align: center; }
+        .news-item { background: white; border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .news-item h3 { color: #333; margin-top: 0; }
         .date { color: #666; font-size: 0.9em; }
         .read-more { color: #1a73e8; text-decoration: none; }
+        nav { background: #0d47a1; padding: 10px; }
+        nav a { color: white; margin: 0 15px; text-decoration: none; }
+        .admin-btn { background: #ff9800; padding: 5px 15px; border-radius: 3px; }
     </style>
 </head>
 <body>
-    <h1>လောကီသုတပညာသတင်းဌာန</h1>
+    <header>
+        <h1>လောကီသုတပညာသတင်းဌာန</h1>
+        <nav>
+            <a href="index.html">ပင်မစာမျက်နှာ</a>
+            <a href="admin.html">Admin</a>
+            <a href="#about">အကြောင်း</a>
+        </nav>
+    </header>
     
-    <div id="news-container">
-        <p>သတင်းများ လာရောက်သည်...</p>
-    </div>
-
-    <script>
-        // Firebase Configuration (သင့်ရဲ့ configuration နဲ့ အစားထိုးပါ)
-        const firebaseConfig = {
-            apiKey: "AIzaSyB...", // သင့်ရဲ့ apiKey
-            authDomain: "lawkesutapanyar.firebaseapp.com",
-            projectId: "lawkesutapanyar",
-            storageBucket: "lawkesutapanyar.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abc123def456"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // သတင်းများကို ဖော်ပြရန် function
-        async function loadNews() {
-            try {
-                const newsContainer = document.getElementById('news-container');
-                newsContainer.innerHTML = '<p>သတင်းများ ရယူနေသည်...</p>';
-                
-                const querySnapshot = await db.collection("news")
-                    .orderBy("createdAt", "desc")
-                    .limit(10)
-                    .get();
-                
-                if (querySnapshot.empty) {
-                    newsContainer.innerHTML = '<p>သတင်းများ မရှိသေးပါ။</p>';
-                    return;
-                }
-                
-                newsContainer.innerHTML = '';
-                
-                querySnapshot.forEach((doc) => {
-                    const news = doc.data();
-                    const newsElement = document.createElement('div');
-                    newsElement.className = 'news-item';
-                    
-                    // Date format ပြောင်းခြင်း
-                    let dateStr = 'ရက်စွဲမရှိ';
-                    if (news.createdAt) {
-                        const date = news.createdAt.toDate();
-                        dateStr = date.toLocaleDateString('my-MM');
-                    }
-                    
-                    newsElement.innerHTML = `
-                        <h3>${news.title || 'ခေါင်းစဉ်မရှိ'}</h3>
-                        <p>${news.content ? news.content.substring(0, 150) + '...' : 'အကြောင်းအရာမရှိ'}</p>
-                        <p><strong>အမျိုးအစား:</strong> ${news.category || 'အထွေထွေ'}</p>
-                        <span class="date">${dateStr}</span>
-                        <br>
-                        <a href="#" class="read-more" onclick="viewNewsDetail('${doc.id}')">ဆက်ဖတ်ရန်</a>
-                    `;
-                    
-                    newsContainer.appendChild(newsElement);
-                });
-                
-            } catch (error) {
-                console.error("အမှား:", error);
-                document.getElementById('news-container').innerHTML = 
-                    '<p>သတင်းများ ရယူရာတွင် အမှားတစ်ခုဖြစ်နေပါသည်။</p>';
-            }
-        }
-
-        // စာမျက်နှာ load ပြီးတိုင်း သတင်းများကို ဖော်ပြပါ
-        document.addEventListener('DOMContentLoaded', loadNews);
-
-        // သတင်းအပြည့်အစုံ ကြည့်ရှုရန် function
-        function viewNewsDetail(newsId) {
-            alert('သတင်း ID: ' + newsId + '\nဤ function ကို နောက်ပိုင်းတွင် ပြင်ဆင်ပါမည်။');
-            // နောက်ပိုင်းတွင် modal သို့မဟုတ် သီးသန့်စာမျက်နှာ ဖွင့်ရန်
-        }
-    </script>
+    <main style="max-width: 800px; margin: 20px auto;">
+        <h2>နောက်ဆုံးရသတင်းများ</h2>
+        <div id="news-container">
+            <p>သတင်းများ လာရောက်သည်...</p>
+        </div>
+    </main>
+    
+    <footer style="text-align: center; padding: 20px; background: #333; color: white; margin-top: 40px;">
+        <p>© 2024 လောကီသုတပညာသတင်းဌာန</p>
+    </footer>
 </body>
 </html>
